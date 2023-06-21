@@ -15,6 +15,7 @@ class CreateDispenserHandlerTest extends TestCase
     public function testCreateDispenserResponseOk(): void
     {
         $dispenserRepository = $this->createMock(DispenserRepositoryInterface::class);
+        $dispenserRepository->expects($this->once())->method('save');
         $createDispenserService = new CreateDispenserService($dispenserRepository);
         $createDispenserHandler = new CreateDispenserHandler($createDispenserService);
         ($createDispenserHandler)(new CreateDispenserCommand(Uuid::from('6a329acf-1bdb-48a8-a73d-72eb19c2f0a2'), 0.1));

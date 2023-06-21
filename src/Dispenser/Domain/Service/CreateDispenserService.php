@@ -7,7 +7,7 @@ use App\Dispenser\Domain\Model\Dispenser;
 use App\Dispenser\Domain\Repository\DispenserRepositoryInterface;
 use App\Shared\Domain\ValueObject\Uuid;
 
-class CreateDispenserService
+final class CreateDispenserService
 {
     public function __construct(private DispenserRepositoryInterface $dispenserRepository)
     {

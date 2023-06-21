@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Dispenser\Infastructure\Repository;
+namespace App\Dispenser\Infrastructure\Repository;
 
 use App\Dispenser\Domain\Model\Dispenser;
 use App\Dispenser\Domain\Repository\DispenserRepositoryInterface;
@@ -21,7 +21,6 @@ final class DispenserRepository implements DispenserRepositoryInterface
 
     public function save(Dispenser $dispenser): void
     {
-
     }
 
     public function getById(string $id): ?Dispenser

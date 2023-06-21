@@ -2,9 +2,10 @@
 
 namespace App\Dispenser\Application\Command;
 
+use App\Shared\Application\Command\CommandInterface;
 use App\Shared\Domain\ValueObject\Uuid;
 
-class CreateDispenserCommand
+class CreateDispenserCommand implements CommandInterface
 {
     public function __construct(private Uuid $id, private float $flowVolume)
     {
