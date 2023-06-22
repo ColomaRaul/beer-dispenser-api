@@ -24,7 +24,7 @@ final class DispenserController extends AbstractApiController
 
             return $this->json(['id' => $id->value(), 'flow_volume' => $flowVolume], Response::HTTP_OK);
         } catch (\Exception $e) {
-            return $this->json('error', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

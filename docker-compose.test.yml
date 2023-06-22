@@ -8,6 +8,7 @@ services:
     restart: unless-stopped
     depends_on:
       - skeleton-php-symfony-postgres-test
+      - migrations
     environment:
       APP_ENV: test
     volumes:
@@ -35,6 +36,21 @@ services:
       retries: 5
     networks:
       rviewer-skeleton-php-symfony-net-test:
+  
+  migrations:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    depends_on:
+      - skeleton-php-symfony-postgres-test
+    environment:
+      APP_ENV: test
+    volumes:
+      - ./:/srv/app
+      - ./docker/php/conf.d/symfony.dev.ini:/usr/local/etc/php/conf.d/symfony.ini
+    command: php bin/console doctrine:migrations:migrate --no-interaction
+    networks:
+      - rviewer-skeleton-php-symfony-net-test
 
 volumes:
   rviewer-skeleton-php-symfony-postgres-volume-testing:

@@ -16,8 +16,7 @@ final class Dispenser
         private float $flowVolume,
         private DispenserStatusType $status = DispenserStatusType::CLOSE,
         private float $priceByLitre = self::DEFAULT_PRICE_BY_LITRE,
-        private ?DateTimeValue $openTime = null,
-        private ?DateTimeValue $closeTime = null,
+        private float $amount = 0.0,
     ) {
     }
 
@@ -31,10 +30,9 @@ final class Dispenser
         float $flowVolume,
         DispenserStatusType $status,
         float $priceByLitre,
-        ?DateTimeValue $openTime,
-        ?DateTimeValue $closeTime
+        float $amount,
     ): self {
-        return new self($id, $flowVolume, $status, $priceByLitre, $openTime, $closeTime);
+        return new self($id, $flowVolume, $status, $priceByLitre, $amount);
     }
 
     public function id(): Uuid
@@ -57,13 +55,8 @@ final class Dispenser
         return $this->priceByLitre;
     }
 
-    public function openTime(): ?DateTimeValue
+    public function amount(): float
     {
-        return $this->openTime;
-    }
-
-    public function closeTime(): ?DateTimeValue
-    {
-        return $this->closeTime;
+        return $this->amount;
     }
 }
