@@ -20,9 +20,9 @@ abstract class AbstractApiController extends AbstractController
         $this->messageBus = $messageBus;
     }
 
-    protected function getBody(Request $request): ParameterBag
+    protected function getBody(Request $request): array
     {
-        return $request->request;
+        return json_decode($request->getContent(), true);
     }
 
     protected function handleMessage(CommandInterface|QueryInterface $commandQuery)
