@@ -3,23 +3,43 @@ declare(strict_types=1);
 
 namespace App\DispenserEvent\Domain\Model;
 
+use App\DispenserEvent\Domain\Exception\DispenserAlreadyUpdateSameStatusException;
 use App\Shared\Domain\ValueObject\DateTimeValue;
+use App\Shared\Domain\ValueObject\DispenserStatusType;
 use App\Shared\Domain\ValueObject\Uuid;
 
 final class DispenserEvent
 {
     private function __construct(
-        private int $id,
+        private Uuid $id,
         private Uuid $dispenserId,
         private DateTimeValue $updatedAt,
-        private ?DateTimeValue $openedAt,
-        private ?DateTimeValue $closedAt,
+        private ?DateTimeValue $openedAt = null,
+        private ?DateTimeValue $closedAt = null,
         private float $totalSpent = 0.0,
     ) {
-
     }
 
-    public function id(): int
+    public static function create(
+        Uuid $id,
+        Uuid $dispenserId,
+        DateTimeValue $updatedAt,
+    ): self {
+        return new self($id, $dispenserId, $updatedAt);
+    }
+
+    public static function reconstitute(
+        Uuid $id,
+        Uuid $dispenserId,
+        DateTimeValue $updatedAt,
+        ?DateTimeValue $openedAt,
+        ?DateTimeValue $closedAt,
+        float $totalSpent,
+    ): self {
+        return new self($id, $dispenserId, $updatedAt, $openedAt, $closedAt, $totalSpent);
+    }
+
+    public function id(): Uuid
     {
         return $this->id;
     }
@@ -49,22 +69,41 @@ final class DispenserEvent
         return $this->totalSpent;
     }
 
-    public function openTap(): self
-    {
-        $this->openedAt = $this->updatedAt();
-
-        return $this;
-    }
-
-    public function closeTap(): self
-    {
-        $this->closedAt = $this->updatedAt();
-
-        return $this;
-    }
-
     public function calculateSpent(): self
     {
         return $this;
+    }
+
+    public function updateStatus(DispenserStatusType $status, DateTimeValue $updatedAt): void
+    {
+        if ($this->isOpen() && $status == DispenserStatusType::OPEN) {
+            throw new DispenserAlreadyUpdateSameStatusException('Dispenser is already opened');
+        }
+
+        if ($this->isClose() && $status == DispenserStatusType::CLOSE) {
+            throw new DispenserAlreadyUpdateSameStatusException('Dispenser is already closed');
+        }
+
+        if ($status == DispenserStatusType::OPEN) {
+            $this->openedAt = $updatedAt;
+            $this->updatedAt = $updatedAt;
+
+            return;
+        }
+
+        if ($status == DispenserStatusType::CLOSE) {
+            $this->closedAt = $updatedAt;
+            $this->updatedAt = $updatedAt;
+        }
+    }
+
+    public function isOpen(): bool
+    {
+        return null !== $this->openedAt() && null === $this->closedAt();
+    }
+
+    public function isClose(): bool
+    {
+        return (null === $this->openedAt() && null === $this->closedAt()) || (null !== $this->openedAt() && null !== $this->closedAt());
     }
 }

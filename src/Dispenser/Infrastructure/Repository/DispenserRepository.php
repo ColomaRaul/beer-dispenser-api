@@ -6,6 +6,7 @@ namespace App\Dispenser\Infrastructure\Repository;
 use App\Dispenser\Domain\Model\Dispenser;
 use App\Dispenser\Domain\Repository\DispenserRepositoryInterface;
 use App\Dispenser\Domain\Repository\Exceptions\DispenserNotInsertedRepositoryException;
+use App\Shared\Domain\ValueObject\Uuid;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Psr\Log\LoggerInterface;
@@ -49,8 +50,30 @@ final class DispenserRepository implements DispenserRepositoryInterface
         }
     }
 
-    public function getById(string $id): ?Dispenser
+    public function getById(Uuid $id): ?Dispenser
     {
-        return null;
+        try {
+            $queryBuilder = $this->connection->createQueryBuilder();
+            $queryBuilder->select('*')
+                ->from(self::TABLE_NAME, 'dis')
+                ->where('dis.id = :id')
+                ->setParameter('id', $id->value());
+
+            $result = $queryBuilder->executeQuery()->fetchOne();
+
+            if (false === $result) {
+                return null;
+            }
+
+            return Dispenser::reconstitute(
+                Uuid::from($result['id']),
+                $result['flow_volume'],
+                $result['price_by_litre'],
+                $result['amount'],
+            );
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage());
+            throw $e;
+        }
     }
 }

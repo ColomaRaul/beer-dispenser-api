@@ -15,6 +15,6 @@ final class UpdateStatusDispenserEventHandler implements MessageHandlerInterface
 
     public function __invoke(UpdateStatusDispenserEventCommand $command): void
     {
-        return;
+        $this->service->updateStatus($command->dispenserId(), $command->status(), $command->updatedAt());
     }
 }
