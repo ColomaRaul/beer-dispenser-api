@@ -18,8 +18,8 @@ class CreateDispenserHandlerTest extends WebTestCase
 
     public function testReturnCreateDispenserResponseOk(): void
     {
-        $payload = ['flow_volume' => 0.056];
-        $this->client->request('POST', '/api/dispenser', $payload);
+        $payload = json_encode(['flow_volume' => 0.056]);
+        $this->client->request('POST', '/api/dispenser', content: $payload);
 
         $response = $this->client->getResponse();
         $responseDecoded = json_decode($response->getContent(), true);
