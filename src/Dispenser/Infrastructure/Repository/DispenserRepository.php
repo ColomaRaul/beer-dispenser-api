@@ -59,7 +59,7 @@ final class DispenserRepository implements DispenserRepositoryInterface
                 ->where('dis.id = :id')
                 ->setParameter('id', $id->value());
 
-            $result = $queryBuilder->executeQuery()->fetchOne();
+            $result = $queryBuilder->executeQuery()->fetchAssociative();
 
             if (false === $result) {
                 return null;
@@ -67,9 +67,9 @@ final class DispenserRepository implements DispenserRepositoryInterface
 
             return Dispenser::reconstitute(
                 Uuid::from($result['id']),
-                $result['flow_volume'],
-                $result['price_by_litre'],
-                $result['amount'],
+                (float)$result['flow_volume'],
+                (float)$result['price_by_litre'],
+                (float)$result['amount'],
             );
         } catch (Exception $e) {
             $this->logger->error($e->getMessage());

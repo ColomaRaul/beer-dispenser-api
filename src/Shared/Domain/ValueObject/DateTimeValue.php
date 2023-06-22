@@ -13,15 +13,16 @@ final class DateTimeValue
     {
     }
 
-    public static function create(DateTimeInterface $dateTime): self
+    public static function create(?DateTimeInterface $dateTime = null): self
     {
+        if (null === $dateTime) {
+            $dateTime = new DateTimeImmutable();
+        }
+
         return new self($dateTime);
     }
 
     /**
-     * @param string $dateTimeString
-     * @param string|null $timezone
-     * @return self
      * @throws \Exception
      */
     public static function createFromString(string $dateTimeString, string $timezone = null): self
