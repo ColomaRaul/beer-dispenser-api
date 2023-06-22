@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Dispenser\Domain\Model\ValueObject;
+namespace App\Shared\Domain\ValueObject;
 
 enum DispenserStatusType: string
 {

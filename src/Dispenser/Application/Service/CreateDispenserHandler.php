@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace App\Dispenser\Application\Service;
 
 use App\Dispenser\Application\Command\CreateDispenserCommand;
-use App\Dispenser\Domain\Repository\Exceptions\DispenserRepositoryException;
 use App\Dispenser\Domain\Service\CreateDispenserService;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 

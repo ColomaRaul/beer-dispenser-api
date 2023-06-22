@@ -3,8 +3,7 @@ declare(strict_types=1);
 
 namespace App\Dispenser\Domain\Model;
 
-use App\Dispenser\Domain\Model\ValueObject\DispenserStatusType;
-use App\Shared\Domain\ValueObject\DateTimeValue;
+use App\Shared\Domain\ValueObject\DispenserStatusType;
 use App\Shared\Domain\ValueObject\Uuid;
 
 final class Dispenser
