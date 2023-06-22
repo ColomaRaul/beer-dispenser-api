@@ -35,13 +35,11 @@ final class DispenserRepository implements DispenserRepositoryInterface
                 ->values([
                     'id' => ':id',
                     'flow_volume' => ':flow_volume',
-                    'status' => ':status',
                     'price_by_litre' => ':price_by_litre',
                     'amount' => ':amount',
                 ])
                 ->setParameter('id', $dispenser->id()->value())
                 ->setParameter('flow_volume', $dispenser->flowVolume())
-                ->setParameter('status', $dispenser->status()->value)
                 ->setParameter('price_by_litre', $dispenser->priceByLitre())
                 ->setParameter('amount', $dispenser->amount());
             $queryBuilder->executeQuery();

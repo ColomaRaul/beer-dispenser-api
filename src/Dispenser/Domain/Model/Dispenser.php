@@ -13,7 +13,6 @@ final class Dispenser
     private function __construct(
         private Uuid $id,
         private float $flowVolume,
-        private DispenserStatusType $status = DispenserStatusType::CLOSE,
         private float $priceByLitre = self::DEFAULT_PRICE_BY_LITRE,
         private float $amount = 0.0,
     ) {
@@ -27,11 +26,10 @@ final class Dispenser
     public static function reconstitute(
         Uuid $id,
         float $flowVolume,
-        DispenserStatusType $status,
         float $priceByLitre,
         float $amount,
     ): self {
-        return new self($id, $flowVolume, $status, $priceByLitre, $amount);
+        return new self($id, $flowVolume, $priceByLitre, $amount);
     }
 
     public function id(): Uuid
@@ -42,11 +40,6 @@ final class Dispenser
     public function flowVolume(): float
     {
         return $this->flowVolume;
-    }
-
-    public function status(): DispenserStatusType
-    {
-        return $this->status;
     }
 
     public function priceByLitre(): float

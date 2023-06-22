@@ -16,8 +16,8 @@ final class Version20230621190705 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql('CREATE TABLE dispenser (id UUID not null, flow_volume float not null, status VARCHAR(50) not null, price_by_litre float not null, amount integer default 0, PRIMARY KEY (id))');
-        $this->addSql('CREATE TABLE dispenser_event (id SERIAL PRIMARY KEY, dispenser_id UUID not null, event_status VARCHAR(50) not null, event_time TIMESTAMP WITH TIME ZONE, flow_volume float not null, total_spent float default 0.0)');
+        $this->addSql('CREATE TABLE dispenser (id UUID PRIMARY KEY, flow_volume float not null, price_by_litre float not null, amount integer default 0)');
+        $this->addSql('CREATE TABLE dispenser_event (id SERIAL PRIMARY KEY, dispenser_id UUID not null, updated_at TIMESTAMP WITH TIME ZONE, opened_at TIMESTAMP WITH TIME ZONE, closed_at TIMESTAMP WITH TIME ZONE, total_spent float default 0.0)');
     }
 
     public function down(Schema $schema): void
