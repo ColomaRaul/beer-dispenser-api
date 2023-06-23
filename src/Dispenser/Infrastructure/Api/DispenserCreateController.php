@@ -15,9 +15,9 @@ final class DispenserCreateController extends AbstractApiController
 {
     public function __invoke(Request $request): JsonResponse
     {
-        $body = $this->getBody($request);
-
         try {
+            $body = $this->getBody($request);
+
             $flowVolume = (float) $body['flow_volume'];
             $id = Uuid::generate();
             $this->handleMessage(new CreateDispenserCommand($id, $flowVolume));

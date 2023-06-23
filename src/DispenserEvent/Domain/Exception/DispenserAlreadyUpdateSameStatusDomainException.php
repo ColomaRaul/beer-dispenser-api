@@ -5,5 +5,4 @@ namespace App\DispenserEvent\Domain\Exception;
 
 final class DispenserAlreadyUpdateSameStatusDomainException extends \Exception implements DispenserEventDomainException
 {
-
 }
