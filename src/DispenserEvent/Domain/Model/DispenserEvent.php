@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\DispenserEvent\Domain\Model;
 
-use App\DispenserEvent\Domain\Exception\DispenserAlreadyUpdateSameStatusException;
+use App\DispenserEvent\Domain\Exception\DispenserAlreadyUpdateSameStatusDomainException;
 use App\Shared\Domain\ValueObject\DateTimeValue;
 use App\Shared\Domain\ValueObject\DispenserStatusType;
 use App\Shared\Domain\ValueObject\Money;
@@ -90,11 +90,11 @@ final class DispenserEvent
     public function updateStatus(DispenserStatusType $status, DateTimeValue $updatedAt): void
     {
         if ($this->isOpen() && $status == DispenserStatusType::OPEN) {
-            throw new DispenserAlreadyUpdateSameStatusException('Dispenser is already opened');
+            throw new DispenserAlreadyUpdateSameStatusDomainException('Dispenser is already opened');
         }
 
         if ($this->isClose() && $status == DispenserStatusType::CLOSE) {
-            throw new DispenserAlreadyUpdateSameStatusException('Dispenser is already closed');
+            throw new DispenserAlreadyUpdateSameStatusDomainException('Dispenser is already closed');
         }
 
         if ($status == DispenserStatusType::OPEN) {

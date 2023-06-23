@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Tests\Unit\DispenserEvent\Domain\Model;
+namespace App\Tests\Unit\Dispenser\Domain\Model;
 
 use App\Dispenser\Domain\Model\Dispenser;
 use App\Shared\Domain\ValueObject\Money;

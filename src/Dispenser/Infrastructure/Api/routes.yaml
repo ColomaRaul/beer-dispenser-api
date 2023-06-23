@@ -5,5 +5,5 @@ CreateDispenser:
 
 UpdateDispenserStatus:
     path: /{id}/status
-    controller: App\Dispenser\Infrastructure\Api\DispenserStatusUpdateController
+    controller: App\DispenserEvent\Infrastructure\Api\DispenserEventStatusUpdateController
     methods: [PUT]

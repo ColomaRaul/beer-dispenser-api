@@ -5,6 +5,7 @@ namespace App\DispenserEvent\Domain\Service;
 
 use App\Dispenser\Domain\Exception\DispenserNotFoundException;
 use App\Dispenser\Domain\Repository\DispenserRepositoryInterface;
+use App\DispenserEvent\Domain\Exception\DispenserAlreadyUpdateSameStatusDomainException;
 use App\DispenserEvent\Domain\Model\DispenserEvent;
 use App\DispenserEvent\Domain\Repository\DispenserEventRepositoryInterface;
 use App\Shared\Domain\ValueObject\DateTimeValue;
@@ -21,6 +22,7 @@ final class UpdateStatusDispenserEventService
 
     /**
      * @throws DispenserNotFoundException
+     * @throws DispenserAlreadyUpdateSameStatusDomainException
      */
     public function updateStatus(Uuid $dispenserId, DispenserStatusType $status, DateTimeValue $updatedAt): void
     {
@@ -40,6 +42,6 @@ final class UpdateStatusDispenserEventService
         $dispenserEvent->calculateSpent($dispenser->flowVolume(), $dispenser->priceByLitre());
         $this->dispenserEventRepository->save($dispenserEvent);
 
-        // TODO launch event if is necessary
+        // TODO launch domain event in this case, for update total amount in the dispenser value
     }
 }

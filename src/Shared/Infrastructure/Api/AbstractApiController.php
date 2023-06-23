@@ -7,6 +7,7 @@ use App\Shared\Application\Command\CommandInterface;
 use App\Shared\Application\Query\QueryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Messenger\Exception\HandlerFailedException;
 use Symfony\Component\Messenger\HandleTrait;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -26,6 +27,14 @@ abstract class AbstractApiController extends AbstractController
 
     protected function handleMessage(CommandInterface|QueryInterface $commandQuery)
     {
-        return $this->handle($commandQuery);
+        try {
+            return $this->handle($commandQuery);
+        } catch (HandlerFailedException $e) {
+            while ($e instanceof HandlerFailedException) {
+                $e = $e->getPrevious();
+            }
+
+            throw $e;
+        }
     }
 }
