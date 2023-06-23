@@ -6,6 +6,7 @@ namespace App\DispenserEvent\Domain\Model;
 use App\DispenserEvent\Domain\Exception\DispenserAlreadyUpdateSameStatusException;
 use App\Shared\Domain\ValueObject\DateTimeValue;
 use App\Shared\Domain\ValueObject\DispenserStatusType;
+use App\Shared\Domain\ValueObject\Money;
 use App\Shared\Domain\ValueObject\Uuid;
 
 final class DispenserEvent
@@ -16,8 +17,9 @@ final class DispenserEvent
         private DateTimeValue $updatedAt,
         private ?DateTimeValue $openedAt = null,
         private ?DateTimeValue $closedAt = null,
-        private float $totalSpent = 0.0,
+        private ?Money $totalSpent = null,
     ) {
+        $this->totalSpent = $totalSpent ?? Money::from(0);
     }
 
     public static function create(
@@ -34,7 +36,7 @@ final class DispenserEvent
         DateTimeValue $updatedAt,
         ?DateTimeValue $openedAt,
         ?DateTimeValue $closedAt,
-        float $totalSpent,
+        Money $totalSpent,
     ): self {
         return new self($id, $dispenserId, $updatedAt, $openedAt, $closedAt, $totalSpent);
     }
@@ -64,12 +66,12 @@ final class DispenserEvent
         return $this->closedAt;
     }
 
-    public function totalSpent(): float
+    public function totalSpent(): Money
     {
         return $this->totalSpent;
     }
 
-    public function calculateSpent(float $flowVolume, float $priceByLitre): self
+    public function calculateSpent(float $flowVolume, Money $priceByLitre): self
     {
         $closedAt = $this->closedAt();
         if (null === $closedAt) {
@@ -80,7 +82,7 @@ final class DispenserEvent
         $totalSeconds = $totalTimeOpened->format('%s');
 
         $totalLitre = $flowVolume * $totalSeconds;
-        $this->totalSpent = $totalLitre * $priceByLitre;
+        $this->totalSpent = Money::from((int) round($totalLitre * $priceByLitre->value()));
 
         return $this;
     }

@@ -4,18 +4,21 @@ declare(strict_types=1);
 namespace App\Dispenser\Domain\Model;
 
 use App\Shared\Domain\ValueObject\DispenserStatusType;
+use App\Shared\Domain\ValueObject\Money;
 use App\Shared\Domain\ValueObject\Uuid;
 
 final class Dispenser
 {
-    private const DEFAULT_PRICE_BY_LITRE = 12.25;
+    private const DEFAULT_PRICE_BY_LITRE = 1225;
 
     private function __construct(
         private Uuid $id,
         private float $flowVolume,
-        private float $priceByLitre = self::DEFAULT_PRICE_BY_LITRE,
-        private float $amount = 0.0,
+        private ?Money $priceByLitre = null,
+        private ?Money $amount = null,
     ) {
+        $this->priceByLitre = $priceByLitre ?? Money::from(self::DEFAULT_PRICE_BY_LITRE);
+        $this->amount = $amount ?? Money::from(0);
     }
 
     public static function create(Uuid $id, float $flowVolume): self
@@ -26,8 +29,8 @@ final class Dispenser
     public static function reconstitute(
         Uuid $id,
         float $flowVolume,
-        float $priceByLitre,
-        float $amount,
+        Money $priceByLitre,
+        Money $amount,
     ): self {
         return new self($id, $flowVolume, $priceByLitre, $amount);
     }
@@ -42,12 +45,12 @@ final class Dispenser
         return $this->flowVolume;
     }
 
-    public function priceByLitre(): float
+    public function priceByLitre(): Money
     {
         return $this->priceByLitre;
     }
 
-    public function amount(): float
+    public function amount(): Money
     {
         return $this->amount;
     }

@@ -6,6 +6,7 @@ namespace App\Dispenser\Infrastructure\Repository;
 use App\Dispenser\Domain\Model\Dispenser;
 use App\Dispenser\Domain\Repository\DispenserRepositoryInterface;
 use App\Dispenser\Domain\Repository\Exceptions\DispenserNotInsertedRepositoryException;
+use App\Shared\Domain\ValueObject\Money;
 use App\Shared\Domain\ValueObject\Uuid;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
@@ -41,8 +42,8 @@ final class DispenserRepository implements DispenserRepositoryInterface
                 ])
                 ->setParameter('id', $dispenser->id()->value())
                 ->setParameter('flow_volume', $dispenser->flowVolume())
-                ->setParameter('price_by_litre', $dispenser->priceByLitre())
-                ->setParameter('amount', $dispenser->amount());
+                ->setParameter('price_by_litre', $dispenser->priceByLitre()->value())
+                ->setParameter('amount', $dispenser->amount()->value());
             $queryBuilder->executeQuery();
         } catch (Exception $e) {
             $this->logger->error($e->getMessage());
@@ -68,8 +69,8 @@ final class DispenserRepository implements DispenserRepositoryInterface
             return Dispenser::reconstitute(
                 Uuid::from($result['id']),
                 (float)$result['flow_volume'],
-                (float)$result['price_by_litre'],
-                (float)$result['amount'],
+                Money::from($result['price_by_litre']),
+                Money::from($result['amount']),
             );
         } catch (Exception $e) {
             $this->logger->error($e->getMessage());

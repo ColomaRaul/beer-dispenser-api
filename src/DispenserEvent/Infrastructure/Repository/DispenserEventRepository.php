@@ -6,6 +6,7 @@ namespace App\DispenserEvent\Infrastructure\Repository;
 use App\DispenserEvent\Domain\Model\DispenserEvent;
 use App\DispenserEvent\Domain\Repository\DispenserEventRepositoryInterface;
 use App\Shared\Domain\ValueObject\DateTimeValue;
+use App\Shared\Domain\ValueObject\Money;
 use App\Shared\Domain\ValueObject\Uuid;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
@@ -43,7 +44,7 @@ final class DispenserEventRepository implements DispenserEventRepositoryInterfac
             $stmt->bindValue('updated_at', $dispenserEvent->updatedAt()->toAtomString());
             $stmt->bindValue('opened_at', $dispenserEvent->openedAt()?->toAtomString());
             $stmt->bindValue('closed_at', $dispenserEvent->closedAt()?->toAtomString());
-            $stmt->bindValue('total_spent', $dispenserEvent->totalSpent());
+            $stmt->bindValue('total_spent', $dispenserEvent->totalSpent()->value());
             $stmt->executeQuery();
         } catch (Exception $e) {
             $this->logger->error($e->getMessage());
@@ -75,7 +76,7 @@ final class DispenserEventRepository implements DispenserEventRepositoryInterfac
                 DateTimeValue::createFromString($result['updated_at']),
                 null !== $result['opened_at'] ? DateTimeValue::createFromString($result['opened_at']) : null,
                 null !== $result['closed_at'] ? DateTimeValue::createFromString($result['closed_at']) : null,
-                (float)$result['total_spent'],
+                Money::from($result['total_spent']),
             );
         } catch (Exception $e) {
             $this->logger->error($e->getMessage());
