@@ -26,7 +26,29 @@ final class DispenserEventRepository implements DispenserEventRepositoryInterfac
 
     public function save(DispenserEvent $dispenserEvent): void
     {
-        return;
+        try {
+            $sql = sprintf('
+                    INSERT INTO %s (id, dispenser_id, updated_at, opened_at, closed_at, total_spent)
+                    VALUES (:id, :dispenser_id, :updated_at, :opened_at, :closed_at, :total_spent)
+                    ON CONFLICT (id) DO UPDATE SET 
+                        dispenser_id = :dispenser_id,
+                        updated_at = :updated_at,
+                        opened_at = :opened_at,
+                        closed_at = :closed_at,
+                        total_spent = :total_spent
+                    ', self::TABLE_NAME);
+            $stmt = $this->connection->prepare($sql);
+            $stmt->bindValue('id', $dispenserEvent->id()->value());
+            $stmt->bindValue('dispenser_id', $dispenserEvent->dispenserId()->value());
+            $stmt->bindValue('updated_at', $dispenserEvent->updatedAt()->toAtomString());
+            $stmt->bindValue('opened_at', $dispenserEvent->openedAt()?->toAtomString());
+            $stmt->bindValue('closed_at', $dispenserEvent->closedAt()?->toAtomString());
+            $stmt->bindValue('total_spent', $dispenserEvent->totalSpent());
+            $stmt->executeQuery();
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage());
+            throw $e;
+        }
     }
 
     public function lastOpenedDispenserEventByDispenser(Uuid $dispenserId): ?DispenserEvent
@@ -37,11 +59,11 @@ final class DispenserEventRepository implements DispenserEventRepositoryInterfac
                 ->select('*')
                 ->from(self::TABLE_NAME, 'de')
                 ->where('de.dispenser_id = :dispenserId')
-                ->andWhere('de.closed_at is not null')
+                ->andWhere('de.closed_at is null')
                 ->orderBy('de.updated_at', 'DESC')
                 ->setParameter('dispenserId', $dispenserId->value());
 
-            $result = $queryBuilder->executeQuery()->fetchOne();
+            $result = $queryBuilder->executeQuery()->fetchAssociative();
 
             if (false === $result) {
                 return null;
@@ -53,7 +75,7 @@ final class DispenserEventRepository implements DispenserEventRepositoryInterfac
                 DateTimeValue::createFromString($result['updated_at']),
                 null !== $result['opened_at'] ? DateTimeValue::createFromString($result['opened_at']) : null,
                 null !== $result['closed_at'] ? DateTimeValue::createFromString($result['closed_at']) : null,
-                $result['total_spent'],
+                (float)$result['total_spent'],
             );
         } catch (Exception $e) {
             $this->logger->error($e->getMessage());

@@ -69,8 +69,19 @@ final class DispenserEvent
         return $this->totalSpent;
     }
 
-    public function calculateSpent(): self
+    public function calculateSpent(float $flowVolume, float $priceByLitre): self
     {
+        $closedAt = $this->closedAt();
+        if (null === $closedAt) {
+            $closedAt = DateTimeValue::create();
+        }
+
+        $totalTimeOpened = $this->openedAt()->value()->diff($closedAt->value());
+        $totalSeconds = $totalTimeOpened->format('%s');
+
+        $totalLitre = $flowVolume * $totalSeconds;
+        $this->totalSpent = $totalLitre * $priceByLitre;
+
         return $this;
     }
 

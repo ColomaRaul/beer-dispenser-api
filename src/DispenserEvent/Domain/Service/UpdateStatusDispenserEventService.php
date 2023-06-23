@@ -32,11 +32,13 @@ final class UpdateStatusDispenserEventService
 
         $dispenserEvent = $this->dispenserEventRepository->lastOpenedDispenserEventByDispenser($dispenserId);
 
-        if (null === $dispenserEvent && $status == DispenserStatusType::OPEN) {
+        if (null === $dispenserEvent) {
             $dispenserEvent = DispenserEvent::create(Uuid::generate(), $dispenserId, $updatedAt);
         }
 
         $dispenserEvent->updateStatus($status, $updatedAt);
+        $dispenserEvent->calculateSpent($dispenser->flowVolume(), $dispenser->priceByLitre());
+        $this->dispenserEventRepository->save($dispenserEvent);
 
         // TODO launch event if is necessary
     }
