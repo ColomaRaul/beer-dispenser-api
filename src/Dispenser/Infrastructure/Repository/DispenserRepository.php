@@ -31,20 +31,19 @@ final class DispenserRepository implements DispenserRepositoryInterface
     public function save(Dispenser $dispenser): void
     {
         try {
-            $queryBuilder = $this->connection->createQueryBuilder();
-            $queryBuilder
-                ->insert(self::TABLE_NAME)
-                ->values([
-                    'id' => ':id',
-                    'flow_volume' => ':flow_volume',
-                    'price_by_litre' => ':price_by_litre',
-                    'amount' => ':amount',
-                ])
-                ->setParameter('id', $dispenser->id()->value())
-                ->setParameter('flow_volume', $dispenser->flowVolume())
-                ->setParameter('price_by_litre', $dispenser->priceByLitre()->value())
-                ->setParameter('amount', $dispenser->amount()->value());
-            $queryBuilder->executeQuery();
+            $sql = sprintf('
+                        INSERT INTO %s (id, flow_volume, price_by_litre, amount)
+                        VALUES (:id, :flow_volume, :price_by_litre, :amount)
+                        ON CONFLICT (id) DO UPDATE SET
+                            flow_volume = :flow_volume,
+                            price_by_litre = :price_by_litre,
+                            amount = :amount', self::TABLE_NAME);
+            $stmt = $this->connection->prepare($sql);
+            $stmt->bindValue('id', $dispenser->id()->value());
+            $stmt->bindValue('flow_volume', $dispenser->flowVolume());
+            $stmt->bindValue('price_by_litre', $dispenser->priceByLitre()->value());
+            $stmt->bindValue('amount', $dispenser->amount()->value());
+            $stmt->executeQuery();
         } catch (Exception $e) {
             $this->logger->error($e->getMessage());
             throw new DispenserNotInsertedRepositoryException($e->getMessage());

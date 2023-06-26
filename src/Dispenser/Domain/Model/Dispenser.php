@@ -54,4 +54,11 @@ final class Dispenser
     {
         return $this->amount;
     }
+
+    public function incrementAmount(Money $addAmount): self
+    {
+        $this->amount = $this->amount->add($addAmount);
+
+        return $this;
+    }
 }

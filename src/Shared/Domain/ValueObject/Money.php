@@ -5,7 +5,7 @@ namespace App\Shared\Domain\ValueObject;
 
 final class Money
 {
-    private function __construct(private readonly int $value)
+    private function __construct(private int $value)
     {
     }
 
@@ -27,5 +27,15 @@ final class Money
     public function toFloat(): float
     {
         return $this->value() / 100;
+    }
+
+    public function add(Money $value): self
+    {
+        return new self($this->value + $value->value);
+    }
+
+    public function diff(Money $value): self
+    {
+        return new self($this->value - $value->value);
     }
 }

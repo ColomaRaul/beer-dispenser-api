@@ -83,4 +83,26 @@ final class DispenserEventRepository implements DispenserEventRepositoryInterfac
             throw $e;
         }
     }
+
+    public function allByDispenser(Uuid $dispenserId): array
+    {
+        $queryBuilder = $this->connection->createQueryBuilder();
+        $result = $queryBuilder
+            ->select('*')
+            ->from(self::TABLE_NAME, 'de')
+            ->where('de.dispenser_id = :dispenserId')
+            ->orderBy('de.opened_at', 'ASC')
+            ->setParameter('dispenserId', $dispenserId->value())
+            ->executeQuery()->fetchAllAssociative()
+        ;
+
+        return array_map(static fn ($row) => DispenserEvent::reconstitute(
+            Uuid::from($row['id']),
+            Uuid::from($row['dispenser_id']),
+            DateTimeValue::createFromString($row['updated_at']),
+            null !== $row['opened_at'] ? DateTimeValue::createFromString($row['opened_at']) : null,
+            null !== $row['closed_at'] ? DateTimeValue::createFromString($row['closed_at']) : null,
+            Money::from($row['total_spent']),
+        ), $result);
+    }
 }

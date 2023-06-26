@@ -42,4 +42,11 @@ final class DateTimeValue
     {
         return $this->dateTime;
     }
+
+    public function secondsBetweenDates(DateTimeValue $otherValue): int
+    {
+        $interval = $this->dateTime->diff($otherValue->value());
+
+        return $interval->days * 24 * 60 * 60 + $interval->h * 60 * 60 + $interval->i * 60 + $interval->s;
+    }
 }

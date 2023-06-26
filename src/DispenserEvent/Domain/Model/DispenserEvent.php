@@ -78,8 +78,7 @@ final class DispenserEvent
             $closedAt = DateTimeValue::create();
         }
 
-        $totalTimeOpened = $this->openedAt()->value()->diff($closedAt->value());
-        $totalSeconds = $totalTimeOpened->format('%s');
+        $totalSeconds = $this->openedAt->secondsBetweenDates($closedAt);
 
         $totalLitre = $flowVolume * $totalSeconds;
         $this->totalSpent = Money::from((int) round($totalLitre * $priceByLitre->value()));
@@ -118,5 +117,13 @@ final class DispenserEvent
     public function isClose(): bool
     {
         return (null === $this->openedAt() && null === $this->closedAt()) || (null !== $this->openedAt() && null !== $this->closedAt());
+    }
+
+    public function incrementTotalSpent(Money $addAmount): self
+    {
+        echo $this->totalSpent->value();
+        $this->totalSpent = $this->totalSpent->add($addAmount);
+
+        return $this;
     }
 }

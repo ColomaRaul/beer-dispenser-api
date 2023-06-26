@@ -34,7 +34,7 @@ class DispenserRepositoryTest extends TestCase
 
         $this->connection
             ->expects($this->once())
-            ->method('createQueryBuilder')
+            ->method('prepare')
             ->willThrowException(new Exception());
 
         $this->logger

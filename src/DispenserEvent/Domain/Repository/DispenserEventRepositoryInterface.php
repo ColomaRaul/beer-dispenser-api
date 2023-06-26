@@ -11,4 +11,6 @@ interface DispenserEventRepositoryInterface
     public function save(DispenserEvent $dispenserEvent): void;
 
     public function lastOpenedDispenserEventByDispenser(Uuid $dispenserId): ?DispenserEvent;
+
+    public function allByDispenser(Uuid $dispenserId): array;
 }
