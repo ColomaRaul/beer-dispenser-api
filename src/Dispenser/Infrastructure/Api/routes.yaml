@@ -1,0 +1,14 @@
+CreateDispenser:
+    path: /
+    controller: App\Dispenser\Infrastructure\Api\DispenserCreateController
+    methods: [POST]
+
+UpdateDispenserStatus:
+    path: /{id}/status
+    controller: App\DispenserEvent\Infrastructure\Api\DispenserEventStatusUpdateController
+    methods: [PUT]
+
+GetDispenserSpent:
+    path: /{id}/spending
+    controller: App\Dispenser\Infrastructure\Api\DispenserGetSpentController
+    methods: [ GET ]
