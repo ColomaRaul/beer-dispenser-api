@@ -11,23 +11,25 @@ use App\Shared\Domain\ValueObject\Uuid;
 
 final class DispenserEvent
 {
-    private function __construct(
-        private Uuid $id,
-        private Uuid $dispenserId,
-        private DateTimeValue $updatedAt,
-        private ?DateTimeValue $openedAt = null,
-        private ?DateTimeValue $closedAt = null,
-        private ?Money $totalSpent = null,
-    ) {
-        $this->totalSpent = $totalSpent ?? Money::from(0);
-    }
+    private Uuid $id;
+    private Uuid $dispenserId;
+    private DateTimeValue $updatedAt;
+    private ?DateTimeValue $openedAt = null;
+    private ?DateTimeValue $closedAt = null;
+    private ?Money $totalSpent = null;
 
     public static function create(
         Uuid $id,
         Uuid $dispenserId,
         DateTimeValue $updatedAt,
     ): self {
-        return new self($id, $dispenserId, $updatedAt);
+        $self = new self();
+        $self->id = $id;
+        $self->dispenserId = $dispenserId;
+        $self->updatedAt = $updatedAt;
+        $self->totalSpent = Money::from(0);
+
+        return $self;
     }
 
     public static function reconstitute(
@@ -38,7 +40,15 @@ final class DispenserEvent
         ?DateTimeValue $closedAt,
         Money $totalSpent,
     ): self {
-        return new self($id, $dispenserId, $updatedAt, $openedAt, $closedAt, $totalSpent);
+        $self = new self();
+        $self->id = $id;
+        $self->dispenserId = $dispenserId;
+        $self->updatedAt = $updatedAt;
+        $self->openedAt = $openedAt;
+        $self->closedAt = $closedAt;
+        $self->totalSpent = $totalSpent;
+
+        return $self;
     }
 
     public function id(): Uuid
@@ -117,13 +127,5 @@ final class DispenserEvent
     public function isClose(): bool
     {
         return (null === $this->openedAt() && null === $this->closedAt()) || (null !== $this->openedAt() && null !== $this->closedAt());
-    }
-
-    public function incrementTotalSpent(Money $addAmount): self
-    {
-        echo $this->totalSpent->value();
-        $this->totalSpent = $this->totalSpent->add($addAmount);
-
-        return $this;
     }
 }

@@ -39,9 +39,13 @@ final class UpdateStatusDispenserEventService
         }
 
         $dispenserEvent->updateStatus($status, $updatedAt);
+        $oldTotalSpent = $dispenserEvent->totalSpent();
         $dispenserEvent->calculateSpent($dispenser->flowVolume(), $dispenser->priceByLitre());
-        $this->dispenserEventRepository->save($dispenserEvent);
+        $newTotalSpent = $dispenserEvent->totalSpent();
 
-        // TODO launch domain event in this case, for update total amount in the dispenser value
+        $diff = $newTotalSpent->diff($oldTotalSpent);
+        $dispenser->incrementAmount($diff);
+        $this->dispenserEventRepository->save($dispenserEvent);
+        $this->dispenserRepository->save($dispenser);
     }
 }
