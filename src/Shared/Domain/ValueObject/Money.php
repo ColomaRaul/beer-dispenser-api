@@ -14,11 +14,6 @@ final class Money
         return new self($value);
     }
 
-    public static function fromFloat(float $value): self
-    {
-        return new self((int) round($value * 100));
-    }
-
     public function value(): int
     {
         return $this->value;

@@ -20,7 +20,7 @@ final class DispenserGetSpentController extends AbstractApiController
 
             return $this->json($response, Response::HTTP_OK);
         } catch (\Exception $e) {
-            return $this->json($e->getMessage());
+            return $this->json($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

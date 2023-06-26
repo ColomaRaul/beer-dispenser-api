@@ -5,6 +5,7 @@ namespace App\Tests\Unit\Dispenser\Application\Service;
 
 use App\Dispenser\Application\Query\GetDispenserSpentQuery;
 use App\Dispenser\Application\Service\GetDispenserSpentHandler;
+use App\Dispenser\Domain\Exception\DispenserNotFoundException;
 use App\Dispenser\Domain\Repository\DispenserRepositoryInterface;
 use App\Dispenser\Domain\Service\GetDispenserSpentService;
 use App\DispenserEvent\Domain\Repository\DispenserEventRepositoryInterface;
@@ -35,6 +36,19 @@ class GetDispenserSpentHandlerTest extends TestCase
         $dispenserId = Uuid::generate();
         $this->dispenserRepository->expects($this->once())->method('getById')->willReturn(DispenserObjectMother::create(id: $dispenserId->value(), amount: Money::from(1234)));
         $this->dispenserEventRepository->expects($this->once())->method('allByDispenser')->willReturn([DispenserEventObjectMother::create(dispenserId: $dispenserId->value(),totalSpent: 0)]);
+
+        $response = ($this->handler)(new GetDispenserSpentQuery($dispenserId));
+
+        $this->assertEquals(1234, $response->amount()->value());
+        $this->assertIsArray($response->usages());
+    }
+
+    public function test_given_dispenser_uuid_when_execute_hander_then_throw_exception(): void
+    {
+        $dispenserId = Uuid::generate();
+        $this->dispenserRepository->expects($this->once())->method('getById')->willReturn(null);
+        $this->dispenserEventRepository->expects($this->never())->method('allByDispenser');
+        $this->expectException(DispenserNotFoundException::class);
 
         $response = ($this->handler)(new GetDispenserSpentQuery($dispenserId));
 
